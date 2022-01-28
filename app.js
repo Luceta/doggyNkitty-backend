@@ -5,6 +5,7 @@ import logger from "morgan";
 import createError from "http-errors";
 import cookieParser from "cookie-parser";
 import routers from "./routes";
+import "./db";
 
 const app = express();
 
@@ -13,7 +14,6 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
 app.use(routers);
 
 // catch 404 and forward to error handler

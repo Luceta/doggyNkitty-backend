@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { REFRESH_DURATION, ACCESS_DURATION } from "../constants/time";
+import { TIMES } from "../constants/time";
 
 const ISSUER = "doggyNkitty";
 
@@ -8,12 +9,13 @@ export const generateToken = (userId, isRefreshToken = false) => {
     ? process.env.REFRESH_TOKEN_SECRET
     : process.env.ACCESS_TOKEN_SECRET;
 
-  const expires = isRefreshToken ? REFRESH_DURATION : ACCESS_DURATION;
+  const duration = isRefreshToken ? REFRESH_DURATION : ACCESS_DURATION;
+  const currentTime = Math.floor(Date.now() / TIMES.ONE_MINUTE_MS);
+  const exp = currentTime + duration;
 
-  const token = jwt.sign({ userId }, secret, {
+  const token = jwt.sign({ userId,exp }, secret, {
     issuer: ISSUER,
     algorithm: process.env.JWT_ALGORITHM,
-    expiresIN: `${expires}`,
   });
 
   return token;

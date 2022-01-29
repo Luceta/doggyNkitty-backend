@@ -1,7 +1,8 @@
 import User from "../model/user";
 import createError from "http-errors";
 import { STATUS_CODES, ERROR_MESSAGE } from "../constants";
-import { generateToken } from "../config/token";
+import { generateToken } from "../utils/token";
+import bcrypt from "bcrypt";
 
 export const signup = async (req, res, next) => {
   const { email, password, account, username, intro } = req.body;
@@ -35,16 +36,20 @@ export const signup = async (req, res, next) => {
   }
 
   try {
-    if (User.exists({ account })) {
+    const existAccount = await User.exists({ account });
+    const existEmail = await User.exists({ email });
+
+    if (existAccount) {
+      console.log("???");
       return res
         .status(STATUS_CODES.BAD_REQUEST)
         .json({ message: ERROR_MESSAGE.SIGN_UP.INVALID_ACCOUNT });
     }
 
-    if (User.exists({ email })) {
+    if (existEmail) {
       return res
         .status(STATUS_CODES.BAD_REQUEST)
-        .json({ message: ERROR_MESSAGE.SIGN_UP.INVALID_ACCOUNT });
+        .json({ message: ERROR_MESSAGE.SIGN_UP.INVALID_EMAIL });
     }
 
     const user = await User.create({
@@ -107,12 +112,41 @@ export const login = async (req, res, next) => {
       const accessToken = generateToken(user._id);
       const refreshToken = generateToken(user._id, true);
 
+      const userInfo = {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        account: user.account,
+        image: user.image,
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      };
+
       return res.status(200).json({
-        message: "ok",
-        accessToken,
-        refreshToken,
+        user: userInfo,
       });
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const emailValid = async (req, res, next) => {
+  const {
+    user: { email },
+  } = req.body;
+
+  try {
+    const existUser = await User.findOne({ email });
+    if (existUser) {
+      return res.status(STATUS_CODES.BAD_REQUEST).json({
+        message: ERROR_MESSAGE.EMAIL_VALID.EXIST_EMAIL,
+      });
+    }
+
+    res.json({
+      message: "사용 가능한 이메일 입니다.",
+    });
   } catch (error) {
     next(error);
   }

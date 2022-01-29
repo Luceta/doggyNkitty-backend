@@ -12,9 +12,9 @@ const userSchema = schema(
       trim: true,
     },
     password: { type: String, minLength: 6 },
-    username: { type: String, unique: true, required: true, trim: true },
+    username: { type: String, required: true, trim: true },
     account: { type: String, unique: true, required: true, trim: true },
-    intro: { type: String, unique: true, required: true },
+    intro: { type: String, required: true },
     image: { type: String },
   },
   {

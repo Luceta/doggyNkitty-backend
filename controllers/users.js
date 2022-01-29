@@ -35,6 +35,18 @@ export const signup = async (req, res, next) => {
   }
 
   try {
+    if (User.exists({ account })) {
+      return res
+        .status(STATUS_CODES.BAD_REQUEST)
+        .json({ message: ERROR_MESSAGE.SIGN_UP.INVALID_ACCOUNT });
+    }
+
+    if (User.exists({ email })) {
+      return res
+        .status(STATUS_CODES.BAD_REQUEST)
+        .json({ message: ERROR_MESSAGE.SIGN_UP.INVALID_ACCOUNT });
+    }
+
     const user = await User.create({
       email,
       password,

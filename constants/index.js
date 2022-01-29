@@ -31,4 +31,7 @@ export const ERROR_MESSAGE = {
   EMAIL_VALID: {
     EXIST_EMAIL: "이미 가입된 이메일 주소 입니다.",
   },
+  ACCOUNT_VALID: {
+    EXIST_ACCOUNT: "이미 가입된 계정ID 입니다.",
+  },
 };

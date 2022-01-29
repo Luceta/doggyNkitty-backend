@@ -151,3 +151,24 @@ export const emailValid = async (req, res, next) => {
     next(error);
   }
 };
+
+export const accountValid = async (req, res, next) => {
+  const {
+    user: { account },
+  } = req.body;
+
+  try {
+    const existUser = await User.findOne({ account });
+    if (existUser) {
+      return res.status(STATUS_CODES.BAD_REQUEST).json({
+        message: ERROR_MESSAGE.ACCOUNT_VALID.EXIST_ACCOUNT,
+      });
+    }
+
+    res.json({
+      message: "사용 가능한 계정ID 입니다.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};

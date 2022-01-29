@@ -20,5 +20,11 @@ export const ERROR_MESSAGE = {
     CHECK_PASSWORD: "비밀번호를 입력해주세요.",
     CHECK_CONTENT: "이메일 또는 비밀번호를 입력해주세요.",
     CHECK_INPUT: "이메일 또는 비밀번호가 일치하지 않습니다.",
+    INVALID_USER: "유저를 찾을 수 없습니다.",
+  },
+
+  TOKEN: {
+    INVALID_TOKEN: "잘못된 토큰입니다.",
+    EXPIRED_TOKEN: "만료된 토큰입니다.",
   },
 };

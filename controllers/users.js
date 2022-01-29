@@ -1,6 +1,7 @@
 import User from "../model/user";
 import createError from "http-errors";
 import { STATUS_CODES, ERROR_MESSAGE } from "../constants";
+import { generateToken } from "../config/token";
 
 export const signup = async (req, res, next) => {
   const { email, password, account, username, intro } = req.body;
@@ -10,33 +11,27 @@ export const signup = async (req, res, next) => {
     /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/;
 
   if (!emailReg.test(email)) {
-    throw createError(
-      STATUS_CODES.BAD_REQUEST,
-      ERROR_MESSAGE.SIGN_UP.CHECK_EMAIL
-    );
+    return res.status(STATUS_CODES.BAD_REQUEST).json({
+      message: ERROR_MESSAGE.SIGN_UP.CHECK_EMAIL,
+    });
   }
 
   if (password.length < 6) {
-    throw createError(
-      STATUS_CODES.BAD_REQUEST,
-      ERROR_MESSAGE.SIGN_UP.CHECK_PASSWORD
-    );
+    return res.status(STATUS_CODES.BAD_REQUEST).json({
+      message: ERROR_MESSAGE.SIGN_UP.CHECK_PASSWORD,
+    });
   }
 
   if (!(email && password && account && username)) {
-    console.log(req.body);
-    console.log("필 수 입력사항?");
-    throw createError(
-      STATUS_CODES.BAD_REQUEST,
-      ERROR_MESSAGE.SIGN_UP.CHECK_CONTENT
-    );
+    return res.status(STATUS_CODES.BAD_REQUEST).json({
+      message: ERROR_MESSAGE.SIGN_UP.CHECK_CONTENT,
+    });
   }
 
   if (!accountReg.test(account)) {
-    throw createError(
-      STATUS_CODES.BAD_REQUEST,
-      ERROR_MESSAGE.SIGN_UP.CHECK_ACCOUNT_TEXT
-    );
+    return res.status(STATUS_CODES.BAD_REQUEST).json({
+      message: ERROR_MESSAGE.SIGN_UP.CHECK_ACCOUNT_TEXT,
+    });
   }
 
   try {
@@ -66,4 +61,47 @@ export const signup = async (req, res, next) => {
   }
 };
 
-export const login = async (req, res, next) => {};
+export const login = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email) {
+    return res.status(STATUS_CODES.BAD_REQUEST).json({
+      message: ERROR_MESSAGE.LOGIN_IN.CHECK_EMAIL,
+    });
+  }
+
+  if (!password) {
+    return res.status(STATUS_CODES.BAD_REQUEST).json({
+      message: ERROR_MESSAGE.LOGIN_IN.CHECK_PASSWORD,
+    });
+  }
+
+  if (!(email && password)) {
+    return res.status(STATUS_CODES.BAD_REQUEST).json({
+      message: ERROR_MESSAGE.LOGIN_IN.CHECK_CONTENT,
+    });
+  }
+  try {
+    const user = await User.findOne({ email });
+
+    if (user === null) {
+      next(
+        createError(STATUS_CODES.NOT_FOUND, ERROR_MESSAGE.LOGIN_IN.INVALID_USER)
+      );
+    }
+
+    const valid = await bcrypt.compare(password, user.password);
+    if (valid) {
+      const accessToken = generateToken(user._id);
+      const refreshToken = generateToken(user._id, true);
+
+      return res.status(200).json({
+        message: "ok",
+        accessToken,
+        refreshToken,
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};

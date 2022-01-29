@@ -1,4 +1,5 @@
 import User from "../model/user";
+import Profile from "../model/profile";
 import createError from "http-errors";
 import { STATUS_CODES, ERROR_MESSAGE } from "../constants";
 import { generateToken } from "../utils/token";
@@ -36,7 +37,7 @@ export const signup = async (req, res, next) => {
   }
 
   try {
-    const existAccount = await User.exists({ account });
+    const existAccount = await Profile.exists({ account });
     const existEmail = await User.exists({ email });
 
     if (existAccount) {
@@ -55,6 +56,10 @@ export const signup = async (req, res, next) => {
     const user = await User.create({
       email,
       password,
+    });
+
+    const userProfile = await Profile.create({
+      user: user._id,
       username,
       account,
       intro,
@@ -62,14 +67,12 @@ export const signup = async (req, res, next) => {
     });
 
     const userData = {
-      user: {
-        _id: user._id,
-        email: user.email,
-        username: user.username,
-        account: user.account,
-        intro: user.intro,
-        image: user.image,
-      },
+      _id: user._id,
+      email: user.email,
+      username: userProfile.username,
+      account: userProfile.account,
+      intro: userProfile.intro,
+      image: userProfile.image,
     };
 
     res.json({ message: "회원가입 성공", user: userData });

@@ -1,9 +1,16 @@
 import express from "express";
-import { editProfile, getUserProfile } from "../controllers/profile";
+import {
+  editProfile,
+  getUserProfile,
+  followUser,
+  unfollowUser,
+} from "../controllers/profile";
 import { verifyAuthorization } from "../middlewares/authMiddleware";
 const router = express.Router();
 
 router.get("/:account", verifyAuthorization, getUserProfile);
 router.put("/", verifyAuthorization, editProfile);
+router.post("/:account/follow", verifyAuthorization, followUser);
+router.delete("/:account/unfollow", verifyAuthorization, unfollowUser);
 
 export default router;

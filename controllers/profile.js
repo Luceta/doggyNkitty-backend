@@ -3,6 +3,7 @@ import User from "../model/user";
 import Profile from "../model/profile";
 import createError from "http-errors";
 import { STATUS_CODES, ERROR_MESSAGE } from "../constants";
+import { addFollowing, removeFollower } from "../services/follow";
 
 export const editProfile = async (req, res, next) => {
   const {
@@ -80,6 +81,46 @@ export const getUserProfile = async (req, res, next) => {
     delete copyProfile.user;
 
     res.json({ profile: copyProfile });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const followUser = async (req, res, next) => {
+  const { account } = req.params;
+  const { userId } = req;
+
+  try {
+    const userProfile = await Profile.findOne({ user: userId });
+    const followerProfile = await Profile.findOne({ account });
+
+    if (userProfile) {
+      const result = await addFollowing(userId, followerProfile.user);
+      const { user, follower } = result;
+
+      return res.json({ message: "ok", user, follower });
+    } else {
+      next(
+        createError(STATUS_CODES.NOT_FOUND, ERROR_MESSAGE.LOGIN_IN.INVALID_USER)
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const unfollowUser = async (req, res, next) => {
+  const { userId } = req;
+  const { account } = req.params;
+
+  try {
+    const userProfile = await Profile.findOne({ user: userId });
+    const followerProfile = await Profile.findOne({ account });
+    if (userProfile) {
+      const result = await removeFollower(userId, followerProfile.user);
+      const { user, follower } = result;
+      return res.json({ message: "ok", user, follower });
+    }
   } catch (error) {
     next(error);
   }

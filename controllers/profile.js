@@ -7,6 +7,7 @@ import {
   addFollowing,
   removeFollower,
   getFollowings,
+  getFollowers,
 } from "../services/follow";
 
 export const editProfile = async (req, res, next) => {
@@ -143,7 +144,7 @@ export const followingList = async (req, res, next) => {
     if (userProfile) {
       const following = await getFollowings(userId, account);
 
-      res.json({ following });
+      return res.json({ following });
     } else {
       next(
         createError(STATUS_CODES.NOT_FOUND, ERROR_MESSAGE.LOGIN_IN.INVALID_USER)
@@ -154,4 +155,22 @@ export const followingList = async (req, res, next) => {
   }
 };
 
-export const followerList = (req, res, next) => {};
+export const followerList = async (req, res, next) => {
+  const { userId } = req;
+  const { account } = req.params;
+
+  try {
+    const userProfile = await Profile.findOne({ user: userId });
+    if (userProfile) {
+      const follower = await getFollowers(userId, account);
+
+      return res.json({ follower });
+    } else {
+      next(
+        createError(STATUS_CODES.NOT_FOUND, ERROR_MESSAGE.LOGIN_IN.INVALID_USER)
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+};

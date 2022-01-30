@@ -57,3 +57,14 @@ export const getFollowings = async (userId, account) => {
 
   return following;
 };
+
+export const getFollowers = async (userId, account) => {
+  const user = await Profile.findOne({ user: userId });
+  const followList = user.follower;
+  const options = {
+    user: false,
+  };
+  const follower = await Profile.find({ user: followList }, options);
+
+  return follower;
+};

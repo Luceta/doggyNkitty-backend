@@ -1,4 +1,5 @@
 import Profile from "../model/profile";
+import User from "../model/user";
 
 export const addFollowing = async (userId, followerId) => {
   const currentUser = await Profile.findOneAndUpdate(
@@ -44,4 +45,15 @@ export const removeFollower = async (userId, followerId) => {
   );
 
   return { user: currentUser, follower };
+};
+
+export const getFollowings = async (userId, account) => {
+  const user = await Profile.findOne({ user: userId });
+  const followingList = user.following;
+  const options = {
+    user: false,
+  };
+  const following = await Profile.find({ user: followingList }, options);
+
+  return following;
 };

@@ -3,7 +3,11 @@ import User from "../model/user";
 import Profile from "../model/profile";
 import createError from "http-errors";
 import { STATUS_CODES, ERROR_MESSAGE } from "../constants";
-import { addFollowing, removeFollower } from "../services/follow";
+import {
+  addFollowing,
+  removeFollower,
+  getFollowings,
+} from "../services/follow";
 
 export const editProfile = async (req, res, next) => {
   const {
@@ -120,8 +124,34 @@ export const unfollowUser = async (req, res, next) => {
       const result = await removeFollower(userId, followerProfile.user);
       const { user, follower } = result;
       return res.json({ message: "ok", user, follower });
+    } else {
+      next(
+        createError(STATUS_CODES.NOT_FOUND, ERROR_MESSAGE.LOGIN_IN.INVALID_USER)
+      );
     }
   } catch (error) {
     next(error);
   }
 };
+
+export const followingList = async (req, res, next) => {
+  const { userId } = req;
+  const { account } = req.params;
+
+  try {
+    const userProfile = await Profile.findOne({ user: userId });
+    if (userProfile) {
+      const following = await getFollowings(userId, account);
+
+      res.json({ following });
+    } else {
+      next(
+        createError(STATUS_CODES.NOT_FOUND, ERROR_MESSAGE.LOGIN_IN.INVALID_USER)
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const followerList = (req, res, next) => {};

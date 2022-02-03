@@ -125,3 +125,8 @@ export const deletePost = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getMyPosts = async (req, res, next) => {
+  const { account } = req.params;
+  const { limit, skip } = req.query;
+};

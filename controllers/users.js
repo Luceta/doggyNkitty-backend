@@ -160,16 +160,17 @@ export const accountValid = async (req, res, next) => {
   } = req.body;
 
   try {
-    const existUser = await User.findOne({ account });
-    if (existUser) {
+    const existAccount = await Profile.findOne({ account });
+
+    if (existAccount) {
       return res.status(STATUS_CODES.BAD_REQUEST).json({
         message: ERROR_MESSAGE.ACCOUNT_VALID.EXIST_ACCOUNT,
       });
+    } else {
+      res.json({
+        message: "사용 가능한 계정ID 입니다.",
+      });
     }
-
-    res.json({
-      message: "사용 가능한 계정ID 입니다.",
-    });
   } catch (error) {
     next(error);
   }
@@ -187,8 +188,15 @@ export const searchUser = async (req, res, next) => {
       user: false,
     };
     const user = await Profile.findOne({ account: keyword }, options);
+    console.log(user, "user");
 
-    res.json({ user });
+    if (user) {
+      res.json({ user });
+    } else {
+      next(
+        createError(STATUS_CODES.NOT_FOUND, ERROR_MESSAGE.LOGIN_IN.INVALID_USER)
+      );
+    }
   } catch (error) {
     next(error);
   }

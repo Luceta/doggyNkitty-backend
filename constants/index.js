@@ -38,4 +38,8 @@ export const ERROR_MESSAGE = {
   POST_VALID: {
     CHECK_CONTENT: "내용 또는 이미지를 입력해주세요.",
   },
+
+  POST: {
+    NOT_FOUND: "존재하지 않는 게시글입니다.",
+  },
 };

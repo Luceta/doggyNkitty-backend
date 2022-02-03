@@ -32,3 +32,19 @@ export const writePost = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getPost = async (req, res, next) => {
+  const { postId } = req.params;
+
+  try {
+    const post = await Post.findById(postId).populate("author");
+
+    if (post) {
+      res.json({ post });
+    } else {
+      throw createError(STATUS_CODES.NOT_FOUND, ERROR_MESSAGE.POST.NOT_FOUND);
+    }
+  } catch (error) {
+    next(error);
+  }
+};

@@ -24,29 +24,30 @@ export const editProfile = async (req, res, next) => {
       );
     }
 
-    const existAccount = await Profile.exists({ account });
+    const existAccount = await Profile.findOne({ user: userId });
 
-    if (existAccount) {
+    if (!existAccount) {
       return res
         .status(STATUS_CODES.BAD_REQUEST)
-        .json(ERROR_MESSAGE.SIGN_UP.INVALID_ACCOUNT);
+        .json(ERROR_MESSAGE.LOGIN_IN.INVALID_USER);
+    } else {
+      const profile = await Profile.findOneAndUpdate(
+        { user: userId },
+        {
+          username,
+          account,
+          intro,
+          image,
+        },
+        { new: true }
+      );
+
+      const copyProfile = Object.assign({}, profile._doc);
+      delete copyProfile.user;
+      delete copyProfile.post;
+
+      res.json({ user: copyProfile });
     }
-
-    const profile = await Profile.findOneAndUpdate(
-      { user: userId },
-      {
-        username,
-        account,
-        intro,
-        image,
-      },
-      { new: true }
-    );
-
-    const copyProfile = Object.assign({}, profile._doc);
-    delete copyProfile.user;
-
-    res.json({ user: copyProfile });
   } catch (error) {
     next(error);
   }
@@ -84,6 +85,7 @@ export const getUserProfile = async (req, res, next) => {
 
     const copyProfile = Object.assign({}, userProfile._doc);
     delete copyProfile.user;
+    delete copyProfile.post;
 
     res.json({ profile: copyProfile });
   } catch (error) {

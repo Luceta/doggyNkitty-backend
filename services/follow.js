@@ -2,7 +2,11 @@ import Profile from "../model/profile";
 import User from "../model/user";
 
 export const addFollowing = async (userId, followerId) => {
-  const currentUser = await Profile.findOneAndUpdate(
+  const options = {
+    post: false,
+  };
+
+  await Profile.findOneAndUpdate(
     { user: userId },
     {
       $push: { following: followerId },
@@ -11,9 +15,9 @@ export const addFollowing = async (userId, followerId) => {
     { new: true }
   );
 
-  console.log(currentUser, "user 001");
+  const user = await Profile.findOne({ user: userId }, options);
 
-  const follower = await Profile.findOneAndUpdate(
+  await Profile.findOneAndUpdate(
     { user: followerId },
     {
       $push: { follower: userId },
@@ -22,11 +26,17 @@ export const addFollowing = async (userId, followerId) => {
     { new: true }
   );
 
-  return { user: currentUser, follower };
+  const followerTest = await Profile.findOne({ user: followerId }, options);
+
+  return { user, follower: followerTest };
 };
 
 export const removeFollower = async (userId, followerId) => {
-  const currentUser = await Profile.findOneAndUpdate(
+  const options = {
+    post: false,
+  };
+
+  await Profile.findOneAndUpdate(
     { user: userId },
     {
       $pull: { following: followerId },
@@ -35,7 +45,9 @@ export const removeFollower = async (userId, followerId) => {
     { new: true }
   );
 
-  const follower = await Profile.findOneAndUpdate(
+  const user = await Profile.findOne({ user: userId }, options);
+
+  await Profile.findOneAndUpdate(
     { user: followerId },
     {
       $pull: { follower: userId },
@@ -44,7 +56,9 @@ export const removeFollower = async (userId, followerId) => {
     { new: true }
   );
 
-  return { user: currentUser, follower };
+  const follower = await Profile.findOne({ user: followerId }, options);
+
+  return { user, follower };
 };
 
 export const getFollowings = async (userId, account) => {
@@ -52,6 +66,7 @@ export const getFollowings = async (userId, account) => {
   const followingList = user.following;
   const options = {
     user: false,
+    post: false,
   };
   const following = await Profile.find({ user: followingList }, options);
 
@@ -63,6 +78,7 @@ export const getFollowers = async (userId, account) => {
   const followList = user.follower;
   const options = {
     user: false,
+    post: false,
   };
   const follower = await Profile.find({ user: followList }, options);
 

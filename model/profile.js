@@ -22,7 +22,6 @@ const profileSchema = schema(
       type: Number,
       default: 0,
     },
-    post: [{ type: mongoose.Types.ObjectId, ref: "Post", required: true }],
   },
   {
     versionKey: false,

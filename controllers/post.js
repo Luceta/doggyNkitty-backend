@@ -26,7 +26,9 @@ export const writePost = async (req, res, next) => {
       author: profile._id,
     });
 
-    const postInfo = await Post.findById(newPost._id).populate("author");
+    const postInfo = await Post.findById(newPost._id, { post: false }).populate(
+      "author"
+    );
 
     res.json({ post: postInfo });
   } catch (error) {

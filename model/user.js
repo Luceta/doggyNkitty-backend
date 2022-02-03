@@ -12,6 +12,7 @@ const userSchema = schema(
       trim: true,
     },
     password: { type: String, minLength: 6 },
+    post: [{ type: mongoose.Types.ObjectId, ref: "Post", required: true }],
   },
   {
     versionKey: false,

@@ -18,6 +18,11 @@ const userSchema = schema(
   }
 );
 
+// TODO: code review
+//password 에  3번 이상 틀릴 경우!!
+// 실패한 ip같은 경우도 저장 하기!
+// 이메일 전숭 중이라면!! 전송 해줘라!
+
 userSchema.pre("save", async function () {
   this.password = await bcrypt.hash(
     this.password,

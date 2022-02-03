@@ -41,7 +41,6 @@ export const signup = async (req, res, next) => {
     const existEmail = await User.exists({ email });
 
     if (existAccount) {
-      console.log("???");
       return res
         .status(STATUS_CODES.BAD_REQUEST)
         .json({ message: ERROR_MESSAGE.SIGN_UP.INVALID_ACCOUNT });

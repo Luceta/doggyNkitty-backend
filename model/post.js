@@ -8,7 +8,7 @@ const postSchema = new Schema(
     image: String,
     author: {
       type: mongoose.Types.ObjectId,
-      ref: "User",
+      ref: "Profile",
     },
     likeCount: {
       type: Number,

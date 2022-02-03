@@ -41,5 +41,6 @@ export const ERROR_MESSAGE = {
 
   POST: {
     NOT_FOUND: "존재하지 않는 게시글입니다.",
+    BAD_REQUEST: "잘못된 요청입니다. 로그인 정보를 확인하세요.",
   },
 };

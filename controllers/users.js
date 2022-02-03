@@ -174,3 +174,22 @@ export const accountValid = async (req, res, next) => {
     next(error);
   }
 };
+
+export const searchUser = async (req, res, next) => {
+  const { keyword } = req.query;
+
+  if (!keyword) {
+    throw createError(STATUS_CODES.BAD_REQUEST, "check  your keyword");
+  }
+
+  try {
+    const options = {
+      user: false,
+    };
+    const user = await Profile.findOne({ account: keyword }, options);
+
+    res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+};

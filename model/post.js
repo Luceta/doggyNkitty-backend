@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const postSchema = new Schema(
   {
     content: String,
-    image: String,
+    image: [],
     author: {
       type: mongoose.Types.ObjectId,
       ref: "Profile",
@@ -19,7 +19,10 @@ const postSchema = new Schema(
       default: 0,
     },
   },
-  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
+  {
+    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
+    versionKey: false,
+  }
 );
 
 export default mongoose.model("Post", postSchema);

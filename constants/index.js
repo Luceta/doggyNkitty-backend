@@ -34,4 +34,8 @@ export const ERROR_MESSAGE = {
   ACCOUNT_VALID: {
     EXIST_ACCOUNT: "이미 가입된 계정ID 입니다.",
   },
+
+  POST_VALID: {
+    CHECK_CONTENT: "내용 또는 이미지를 입력해주세요.",
+  },
 };

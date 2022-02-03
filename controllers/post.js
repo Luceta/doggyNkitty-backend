@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import User from "../model/user";
 import Post from "../model/post";
 import Profile from "../model/profile";
 import { STATUS_CODES, ERROR_MESSAGE } from "../constants";
@@ -26,11 +27,17 @@ export const writePost = async (req, res, next) => {
       author: profile._id,
     });
 
-    const postInfo = await Post.findById(newPost._id, { post: false }).populate(
-      "author"
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $push: { post: newPost._id },
+      },
+      { new: true }
     );
 
-    res.json({ post: postInfo });
+    const post = await Post.findById(newPost._id).populate("author");
+
+    res.json({ post });
   } catch (error) {
     next(error);
   }
@@ -130,5 +137,36 @@ export const deletePost = async (req, res, next) => {
 
 export const getMyPosts = async (req, res, next) => {
   const { account } = req.params;
+  const { userId } = req;
   const { limit, skip } = req.query;
+  const options = {
+    limit: limit ? Number(limit) : 10,
+    skip: skip ? Number(skip) : 10,
+  };
+
+  try {
+    const existAccount = await Profile.findOne({ account });
+    if (!existAccount) {
+      next(createError(STATUS_CODES.NOT_FOUND, "check your acount!!"));
+    }
+
+    const userProfile = await Profile.findOne({ account }).populate({
+      path: "user",
+      populate: {
+        path: "post",
+        options,
+      },
+    });
+
+    const posts = await Post.find({
+      _id: { $in: userProfile.user.post },
+    }).populate({
+      path: "author",
+      select: "-_id",
+    });
+
+    res.json({ post: posts });
+  } catch (error) {
+    next(error);
+  }
 };

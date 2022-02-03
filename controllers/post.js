@@ -93,3 +93,35 @@ export const editPost = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deletePost = async (req, res, next) => {
+  const { postId } = req.params;
+  const { userId } = req;
+
+  if (!mongoose.isValidObjectId(postId)) {
+    throw createError(STATUS_CODES.BAD_REQUEST, "잘못된 id입니다.");
+  }
+
+  try {
+    const profile = await Profile.findOne({ user: userId });
+    const user = profile._id.toString();
+    const existPost = await Post.findById(postId);
+
+    if (!existPost) {
+      res.status(404).json({ message: "존재하지 않는 게시글 입니다." });
+    }
+
+    if (existPost.author.toString() !== user) {
+      throw createError(
+        STATUS_CODES.BAD_REQUEST,
+        ERROR_MESSAGE.POST.BAD_REQUEST
+      );
+    } else {
+      await Post.findByIdAndDelete(postId);
+
+      res.json({ message: "삭제되었습니다." });
+    }
+  } catch (error) {
+    next(error);
+  }
+};

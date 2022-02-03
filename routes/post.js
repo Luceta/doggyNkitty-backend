@@ -1,11 +1,15 @@
 import express from "express";
-import { writePost, getPost, editPost } from "../controllers/post";
+import { writePost, getPost, editPost, deletePost } from "../controllers/post";
 import { verifyAuthorization } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
 router.post("/", verifyAuthorization, writePost);
-router.get("/:postId", verifyAuthorization, getPost);
-router.put("/:postId", verifyAuthorization, editPost);
+router
+  .route("/:postId")
+  .all(verifyAuthorization)
+  .get(getPost)
+  .put(editPost)
+  .delete(deletePost);
 
 export default router;

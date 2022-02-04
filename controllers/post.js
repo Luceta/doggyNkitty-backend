@@ -137,7 +137,6 @@ export const deletePost = async (req, res, next) => {
 
 export const getMyPosts = async (req, res, next) => {
   const { account } = req.params;
-  const { userId } = req;
   const { limit, skip } = req.query;
   const options = {
     limit: limit ? Number(limit) : 10,

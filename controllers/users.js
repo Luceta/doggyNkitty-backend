@@ -178,20 +178,22 @@ export const accountValid = async (req, res, next) => {
 
 export const searchUser = async (req, res, next) => {
   const { keyword } = req.query;
+  let users = [];
 
   if (!keyword) {
     throw createError(STATUS_CODES.BAD_REQUEST, "check  your keyword");
   }
 
   try {
-    const options = {
-      user: false,
-    };
-    const user = await Profile.findOne({ account: keyword }, options);
-    console.log(user, "user");
+    users = await Profile.find({
+      $or: [
+        { account: { $regex: new RegExp(keyword, "i") } },
+        { username: { $regex: new RegExp(keyword, "i") } },
+      ],
+    });
 
-    if (user) {
-      res.json({ user });
+    if (users) {
+      res.json({ user: users });
     } else {
       next(
         createError(STATUS_CODES.NOT_FOUND, ERROR_MESSAGE.LOGIN_IN.INVALID_USER)

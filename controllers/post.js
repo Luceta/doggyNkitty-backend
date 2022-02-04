@@ -87,7 +87,6 @@ export const editPost = async (req, res, next) => {
         ERROR_MESSAGE.POST.BAD_REQUEST
       );
     } else {
-      console.log(post, "chekc original post");
       const newPost = await Post.findByIdAndUpdate(
         postId,
         {
@@ -159,6 +158,37 @@ export const getMyPosts = async (req, res, next) => {
 
     const posts = await Post.find({
       _id: { $in: userProfile.user.post },
+    }).populate({
+      path: "author",
+      select: "-_id",
+    });
+
+    res.json({ post: posts });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMyFeeds = async (req, res, next) => {
+  const { userId } = req;
+  const { limit, skip } = req.query;
+  const options = {
+    limit: limit ? Number(limit) : 10,
+    skip: skip ? Number(skip) : 0,
+  };
+  try {
+    const userProfile = await Profile.findOne({ user: userId }).populate({
+      path: "follower",
+      skip: 0,
+    });
+    const allPosts = [];
+
+    userProfile.follower.forEach((user) => {
+      allPosts.push(...user.post);
+    });
+
+    const posts = await Post.find({
+      _id: { $in: allPosts },
     }).populate({
       path: "author",
       select: "-_id",

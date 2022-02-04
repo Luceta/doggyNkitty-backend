@@ -139,9 +139,9 @@ export const emailValid = async (req, res, next) => {
   } = req.body;
 
   try {
-    const existAccount = await User.find({ email });
+    const existEmail = await User.findOne({ email });
 
-    if (existAccount) {
+    if (existEmail) {
       return res.status(STATUS_CODES.BAD_REQUEST).json({
         message: ERROR_MESSAGE.EMAIL_VALID.EXIST_EMAIL,
       });

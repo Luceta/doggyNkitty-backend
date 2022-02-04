@@ -14,7 +14,7 @@ router.get("/:account", verifyAuthorization, getUserProfile);
 router.put("/", verifyAuthorization, editProfile);
 router.post("/:account/follow", verifyAuthorization, followUser);
 router.delete("/:account/unfollow", verifyAuthorization, unfollowUser);
-router.get("/:accountname/following", verifyAuthorization, followingList);
-router.get("/:accountname/follower", verifyAuthorization, followerList);
+router.get("/:account/following", verifyAuthorization, followingList);
+router.get("/:account/follower", verifyAuthorization, followerList);
 
 export default router;

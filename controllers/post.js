@@ -140,7 +140,7 @@ export const getMyPosts = async (req, res, next) => {
   const { limit, skip } = req.query;
   const options = {
     limit: limit ? Number(limit) : 10,
-    skip: skip ? Number(skip) : 10,
+    skip: skip ? Number(skip) : 0,
   };
 
   try {

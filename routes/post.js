@@ -5,11 +5,13 @@ import {
   editPost,
   deletePost,
   getMyPosts,
+  getMyFeeds,
 } from "../controllers/post";
 import { verifyAuthorization } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
+router.get("/feed", verifyAuthorization, getMyFeeds);
 router.post("/", verifyAuthorization, writePost);
 router.get("/:account/userpost", verifyAuthorization, getMyPosts);
 router

@@ -139,16 +139,17 @@ export const emailValid = async (req, res, next) => {
   } = req.body;
 
   try {
-    const existUser = await User.findOne({ email });
-    if (existUser) {
+    const existAccount = await User.find({ email });
+
+    if (existAccount) {
       return res.status(STATUS_CODES.BAD_REQUEST).json({
         message: ERROR_MESSAGE.EMAIL_VALID.EXIST_EMAIL,
       });
+    } else {
+      res.json({
+        message: "사용 가능한 이메일 입니다.",
+      });
     }
-
-    res.json({
-      message: "사용 가능한 이메일 입니다.",
-    });
   } catch (error) {
     next(error);
   }

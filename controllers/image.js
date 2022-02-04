@@ -7,7 +7,6 @@ export const uploadImage = (req, res, next) => {
 export const uploadImages = (req, res, next) => {
   const uploadFiles = [];
   for (const file of req.files) {
-    console.log(file, "file");
     uploadFiles.push(file.location);
   }
 
